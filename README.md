@@ -77,7 +77,7 @@ npm run dev
 打开：
 
 ```text
-http://127.0.0.1:3000
+http://127.0.0.1:3000/codex-weather
 ```
 
 生产构建：
@@ -99,7 +99,7 @@ npm run start
 ### 查询城市
 
 ```bash
-curl "http://127.0.0.1:3000/api/cities?name=上海"
+curl "http://127.0.0.1:3000/codex-weather/api/cities?name=上海"
 ```
 
 示例响应：
@@ -124,7 +124,7 @@ curl "http://127.0.0.1:3000/api/cities?name=上海"
 ### 查询未来 10 天天气和建议
 
 ```bash
-curl -X POST "http://127.0.0.1:3000/api/weather-advice" \
+curl -X POST "http://127.0.0.1:3000/codex-weather/api/weather-advice" \
   -H "Content-Type: application/json" \
   -d '{
     "rangeMode": "future",
@@ -142,7 +142,7 @@ curl -X POST "http://127.0.0.1:3000/api/weather-advice" \
 ### 查询过去 10 天天气和建议
 
 ```bash
-curl -X POST "http://127.0.0.1:3000/api/weather-advice" \
+curl -X POST "http://127.0.0.1:3000/codex-weather/api/weather-advice" \
   -H "Content-Type: application/json" \
   -d '{
     "rangeMode": "past",
@@ -179,6 +179,8 @@ curl -X POST "http://127.0.0.1:3000/api/weather-advice" \
 ```
 
 ## API 说明
+
+本项目配置了 Next.js `basePath: "/codex-weather"`，所以部署后页面和 API 都挂在 `/codex-weather` 子路径下。访问根路径 `/` 会临时重定向到 `/codex-weather`。
 
 ### `GET /api/cities`
 
@@ -226,6 +228,7 @@ curl -X POST "http://127.0.0.1:3000/api/weather-advice" \
 
 ## 关键实现说明
 
+- 子路径部署：`next.config.js` 使用 `basePath: "/codex-weather"`，适配 Vercel 默认域名和自定义域名的 `/codex-weather` 访问路径。
 - API Key 只在服务端读取：前端只调用本项目的 API Routes，不直接请求 DeepSeek，避免泄露 `DEEPSEEK_API_KEY`。
 - 城市搜索做了结果折叠：Open-Meteo 可能返回同名乡镇或地点，`lib/openMeteo.js` 会按主城市特征、人口和匹配度选出 1 个最优结果。
 - 天气查询共用 Open-Meteo Forecast API：未来和过去 10 天通过 `forecast_days`、`past_days` 和本地过滤逻辑实现。

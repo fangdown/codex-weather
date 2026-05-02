@@ -15,6 +15,12 @@ async function readJson(response) {
   return data;
 }
 
+const appBasePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+function apiPath(path) {
+  return `${appBasePath}${path}`;
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [rangeMode, setRangeMode] = useState("future");
@@ -31,7 +37,7 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch("/api/weather-advice", {
+      const response = await fetch(apiPath("/api/weather-advice"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ city, rangeMode: mode }),
@@ -59,7 +65,7 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch(`/api/cities?name=${encodeURIComponent(keyword)}`);
+      const response = await fetch(apiPath(`/api/cities?name=${encodeURIComponent(keyword)}`));
       const data = await readJson(response);
 
       if (!data.cities?.length) {
